@@ -1,9 +1,8 @@
 import itertools as it
-import random
 
 solutions=[] #List to store solutions as they're found
 
-def solve_list(num_list,target,rpn):
+def solve_list(num_list,target,ops):
 	global solutions
 	if target in num_list: #if the target is in the number list add it to solutions
 		solutions.append([str(target)+' = '+str(target)])
@@ -15,61 +14,61 @@ def solve_list(num_list,target,rpn):
 
 		#Addition
 		res=pair[0]+pair[1]
-		new_rpn=rpn+[str(pair[0])+' + '+str(pair[1])+' = '+str(res)] #List of operations (equation strings) performed so far 
+		new_ops=ops+[str(pair[0])+' + '+str(pair[1])+' = '+str(res)] #List of operations (equation strings) performed so far 
 		if res==target: 
 			#if the result of the operation equals the target write the operations to the solutions list
-			solutions.append(new_rpn)
+			solutions.append(new_ops)
 		else:
 			#if not, create a new list with the result and remaining numbers and recurse
 			new_list=[res]+others
-			solve_list(new_list,target,new_rpn)
+			solve_list(new_list,target,new_ops)
 
 		#Multiplication
 		if pair[0]!=1 and pair[1]!=1: #Optimisation: redundant to multiply by one
 			res=pair[0]*pair[1]
-			new_rpn=rpn+[str(pair[0])+' × '+str(pair[1])+' = '+str(res)]
+			new_ops=ops+[str(pair[0])+' × '+str(pair[1])+' = '+str(res)]
 			if res==target:
-				solutions.append(new_rpn)
+				solutions.append(new_ops)
 			else:
 				new_list=[res]+others
-				solve_list(new_list,target,new_rpn)
+				solve_list(new_list,target,new_ops)
 
 		#Subtraction
 		#The operation that doesn't result in a negative number is chosen
 		res=abs(pair[0]-pair[1])
 		if pair[0]>pair[1]:
-			new_rpn=rpn+[str(pair[0])+' - '+str(pair[1])+' = '+str(res)]
+			new_ops=ops+[str(pair[0])+' - '+str(pair[1])+' = '+str(res)]
 		else:
-			new_rpn=rpn+[str(pair[1])+' - '+str(pair[0])+' = '+str(res)]
+			new_ops=ops+[str(pair[1])+' - '+str(pair[0])+' = '+str(res)]
 		if res==target:
-			solutions.append(new_rpn)	
+			solutions.append(new_ops)	
 		else:
 			new_list=[res]+others
-			solve_list(new_list,target,new_rpn)
+			solve_list(new_list,target,new_ops)
 
 		#Division a/b
 		if not pair[1] in [0,1]: #Cannot divide by 0, redundant to divide by 1
 			res=pair[0]/pair[1]
 			if res%1==0 and res!=pair[1]: #Check that the result of the operation is an integer (required by rules), check if a/b=b (redundant)
 				res=int(res)
-				new_rpn=rpn+[str(pair[0])+' ÷ '+str(pair[1])+' = '+str(res)]
+				new_ops=ops+[str(pair[0])+' ÷ '+str(pair[1])+' = '+str(res)]
 				if res==target:
-					solutions.append(new_rpn)
+					solutions.append(new_ops)
 				else:
 					new_list=[res]+others
-					solve_list(new_list,target,new_rpn)
+					solve_list(new_list,target,new_ops)
 
 		#Division b/a
 		if not pair[0] in [0,1]:
 			res=pair[1]/pair[0]
 			if res%1==0 and res!=pair[0]:
 				res=int(res)
-				new_rpn=rpn+[str(pair[1])+' ÷ '+str(pair[0])+' = '+str(res)]		
+				new_ops=ops+[str(pair[1])+' ÷ '+str(pair[0])+' = '+str(res)]		
 				if res==target:
-					solutions.append(new_rpn)
+					solutions.append(new_ops)
 				else:
 					new_list=[res]+others
-					solve_list(new_list,target,new_rpn)
+					solve_list(new_list,target,new_ops)
 
 	return None
 
