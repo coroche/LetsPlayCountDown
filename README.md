@@ -1,5 +1,17 @@
 # Let's Play Countdown!
-Solving the Countdown numbers game
+The purpose of this project is to solve the Countdown numbers game. Contestants must try to hit a target number by operating on a list of six numbers.
+
+#### Number selection
+Numbers are hidden on facedown tiles of two categories, large and small. There are 4 large number tiles (25, 50, 75, 100), and 20 small number tiles (1 to 10, two of each). One contestant chooses how many large numbers they want (between 0 and 4). The remaining positions are filled with small numbers. This makes a list of six numbers to use in trying to hit the target, a randomly generated number between 100 and 999.
+
+#### Rules:
+* Allowed operations are +, -, × and ÷  
+* The result of each operation must be a non-negative integer  
+* Each number in the list can only be used once  
+* Not all numbers have to be used  
+* 30 seconds are given to get as close to the target as possible
+  
+I will attempt to brute force all possible ways to operate on the initial numbers in order to hit the target number.
 
 ## Naive Approach
 
@@ -22,7 +34,7 @@ As we can see, the number of expressions gets a lot larger with every number we 
 
 ### Implementation
 
-The implementation of this approach can be seen **HERE**. As expected, this approach is quite slow. It takes roughly 3 hours to solve a 6 number board. As a lot of the expressions that are generated are not valid (an operator is left without enough operands) I thought I could speed this up by checking if each expression is valid before solving. This only slowed things down even further. Another approach is needed...
+The implementation of this approach can be seen in [rpnMethod.py](rpnMethod.py). As expected, this approach is quite slow. It takes roughly 3 hours to solve a 6 number board. A little bit over the 30s benchmark. As a lot of the expressions that are generated are not valid (an operator is left without enough operands) I thought I could speed this up by checking if each expression is valid before solving. This only slowed things down even further. Another approach is needed...
 
 ## Branching algorithm
 The RPN permutation method has a lot of inefficiencies. The same series of operations are unnecessarily repeated many times, the commutativity of + and * isn't taken advantage of, computation time is wasted on invalid expressions, etc. Let's look at an example of these inefficiencies. In a game with 4 initial numbers the following expressions would be evaluated by the RPN method.
@@ -69,3 +81,6 @@ This method is also memory efficient as at any one time no more than N-2 new num
 
 ### Example with a list of four numbers
 ![Tree](https://user-images.githubusercontent.com/49063400/135449050-67307fd8-a419-4ca2-8d43-9c93d6ac2f19.png)
+
+## Implementation
+The implementation of this method can be seen in [SolveBoard.py](SolveBoard.py). This method can run through all possible operations on a 6 number board in ~15s on my now 10 year old laptop. It will usually find a solution within the first second, so we're well within the time allocated on the game show. I then looked for ways to speed this up further. One possible bottleneck is all the concatenation and appending to the solutions list. When the list of operations for a solution the length of the list grows with each operation. Every time the target is hit the solution list grows by one. I tried initialising the solutions list as a large list of lists of length  (for 5 operations) and then removing the empty elements after the algorythm had finished. This had no consistent effect on the execution time and made the code less readable so so I reverted to the original.
